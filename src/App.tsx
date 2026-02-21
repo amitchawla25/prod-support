@@ -32,6 +32,7 @@ import ApplicationDetailPage from './pages/ApplicationDetailPage';
 import TicketDetailPage from './pages/TicketDetailPage';
 import TicketStatusTest from './pages/TicketStatusTest';
 import ClientTicketsPage from './pages/ClientTicketsPage';
+import ChatPage from './pages/ChatPage';
 // Remove the import for ManageApplicationsPage
 // import ManageApplicationsPage from './pages/ManageApplicationsPage';
 
@@ -273,6 +274,13 @@ function App() {
                 <Route path="/tickets/:ticketId" element={
                   <ProtectedRoute allowedUserTypes={['developer', 'client']}>
                     <TicketDetailPage />
+                  </ProtectedRoute>
+                } />
+
+
+                <Route path="/chat/:ticketId" element={
+                  <ProtectedRoute allowedUserTypes={['developer', 'client']}>
+                    <ChatPage />
                   </ProtectedRoute>
                 } />
 

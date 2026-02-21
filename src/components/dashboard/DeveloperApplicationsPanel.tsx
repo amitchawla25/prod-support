@@ -61,9 +61,11 @@
           .from('help_requests')                                                                                                                                                     
           .update({                                                                                                                                                                  
             status: 'in_progress',                                                                                                                                                   
-            developer_id: application.developer_id                                                                                                                                   
+            selected_developer_id: application.developer_id                                                                                                                                   
           })                                                                                                                                                                         
-          .eq('id', ticketId);                                                                                                                                                       
+          .eq('id', ticketId)
+          .select('id, status')
+          .single();                                                                                                                                                       
                                                                                                                                                                                      
         if (ticketError) throw ticketError;                                                                                                                                          
                                                                                                                                                                                      

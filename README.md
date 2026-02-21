@@ -3,7 +3,7 @@
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/c1281915-d22c-41ba-9091-b69fff5a7032
+**URL**: https://prod-support-phi.vercel.app/
 
 ## How can I edit this code?
 

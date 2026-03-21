@@ -1,5 +1,5 @@
  import React from 'react';                                                                                                                                                         
-  import { useTicketApplications } from '../../hooks/dashboard/useTicketApplications';                                                                                               
+  import { useTicketApplications } from './useTicketApplications';                                                                                               
   import ApplicationCard from './ApplicationCard';                                                                                                                                   
                                                                                                                                                                                      
   interface TicketApplicationsSectionProps {                                                                                                                                         

@@ -23,7 +23,7 @@ export const updateHelpRequestStatus = async (requestId: string, newStatus: stri
       // First, get the current help request to check if it exists and validate the user
       const { data, error } = await supabase
         .from('help_requests')
-        .select('id, status, client_id, developer_id')
+        .select('id, status, client_id, selected_developer_id')
         .eq('id', requestId);
       
       if (error) {
@@ -52,8 +52,7 @@ export const updateHelpRequestStatus = async (requestId: string, newStatus: stri
       
       // Validate the user is either the client or the assigned developer
       const isClient = 'client_id' in currentReqData && currentReqData.client_id === userId;
-      // developer_id may not exist in some tables, so use optional chaining
-      const isDeveloper = 'developer_id' in currentReqData ? currentReqData.developer_id === userId : false;
+      const isDeveloper = 'selected_developer_id' in currentReqData ? currentReqData.selected_developer_id === userId : false;
       
       if (!isClient && !isDeveloper) {
         console.error('[updateHelpRequestStatus] User is not authorized to update this request');
@@ -347,8 +346,8 @@ export const assignDeveloperToRequest = async (
       const { data: updatedData, error: updateError } = await supabase
         .from('help_requests')
         .update({
-          developer_id: developerId,
-          status: 'accepted', // Or another appropriate status indicating assignment
+          selected_developer_id: developerId,
+          status: 'in_progress'
           updated_at: new Date().toISOString()
         })
         .eq('id', requestId)

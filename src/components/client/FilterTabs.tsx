@@ -23,11 +23,11 @@ const FilterTabs = ({ onFilterChange }: FilterTabsProps) => {
         <TabsTrigger value="pending">
           Pending
         </TabsTrigger>
-        <TabsTrigger value="approved_by_client">
-          Approved by Client
+        <TabsTrigger value="approved">
+          Approved
         </TabsTrigger>
-        <TabsTrigger value="rejected_by_client">
-          Rejected by Client
+        <TabsTrigger value="rejected">
+          Rejected
         </TabsTrigger>
       </TabsList>
     </Tabs>

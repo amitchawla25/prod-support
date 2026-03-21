@@ -63,11 +63,11 @@ const MyApplicationsPage = () => {
     fetchApplications();
     
     const timeoutId = setTimeout(() => {
-      if (isLoadingPage) {
-        setIsLoadingPage(false);
-        setHasLoadingTimedOut(true);
-        console.log('MyApplicationsPage: Forced loading state to finish after timeout');
-      }
+      // Always mark as timed out after 10s. The render logic decides
+      // whether to show an error based on whether we're still loading.
+      setHasLoadingTimedOut(true);
+      setIsLoadingPage(false);
+      console.log('MyApplicationsPage: Loading timeout reached after 10s');
     }, 10000);
     
     return () => clearTimeout(timeoutId);
@@ -98,12 +98,15 @@ const MyApplicationsPage = () => {
     });
   }, []);
 
-  if ((hasError || hasApplicationError || hasLoadingTimedOut) && !isLoadingPage) {
+  // Show error state for actual errors
+  // For timeouts, only show error if we're still stuck loading (not if data arrived before the timeout)
+  const isStillLoading = isLoadingPage || isLoading || isLoadingApplications;
+  if ((hasError || hasApplicationError) || (hasLoadingTimedOut && isStillLoading)) {
     return (
       <Layout>
         <DashboardBanner />
-        <ProfileErrorState 
-          title="Unable to load your applications" 
+        <ProfileErrorState
+          title="Unable to load your applications"
           message="We're having trouble loading your applications. Please try again or log out and back in to resolve this issue."
           onForceLogout={handleForceLogout}
           onRetry={handleRetry}

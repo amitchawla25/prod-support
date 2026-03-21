@@ -347,7 +347,7 @@ export const assignDeveloperToRequest = async (
         .from('help_requests')
         .update({
           selected_developer_id: developerId,
-          status: 'in_progress'
+          status: 'in_progress',
           updated_at: new Date().toISOString()
         })
         .eq('id', requestId)

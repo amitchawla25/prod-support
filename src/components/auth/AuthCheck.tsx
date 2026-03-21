@@ -35,14 +35,16 @@ const AuthCheck: React.FC<AuthCheckProps> = ({
   }, [isAuthenticated, authUserType, userId, requiredUserType, allowPublicAccess, location.pathname, isLoading, isVerifying]);
 
   // Show toast when redirecting because of wrong user type
+  // Guard with !isLoading to avoid false positives during auth initialization
+  // (userType is null until the profile fetch resolves, even for authenticated users)
   useEffect(() => {
-    if (isAuthenticated && requiredUserType && authUserType !== requiredUserType) {
+    if (!isLoading && isAuthenticated && requiredUserType && authUserType !== requiredUserType) {
       toast.error(`This page is only accessible to ${requiredUserType}s.`, {
         id: `user-type-mismatch-${requiredUserType}`
       });
       console.log(`User type mismatch: Required ${requiredUserType}, got ${authUserType}, path: ${location.pathname}`);
     }
-  }, [isAuthenticated, requiredUserType, authUserType, location.pathname]);
+  }, [isLoading, isAuthenticated, requiredUserType, authUserType, location.pathname]);
 
   // Verify profile consistency when needed
   useEffect(() => {

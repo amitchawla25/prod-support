@@ -63,9 +63,7 @@
             status: 'in_progress',                                                                                                                                                   
             selected_developer_id: application.developer_id                                                                                                                                   
           })                                                                                                                                                                         
-          .eq('id', ticketId)
-          .select('id, status')
-          .single();                                                                                                                                                       
+          .eq('id', ticketId);
                                                                                                                                                                                      
         if (ticketError) throw ticketError;                                                                                                                                          
                                                                                                                                                                                      
@@ -73,9 +71,10 @@
         toast.success('Developer application approved! Ticket is now in progress.');                                                                                                 
         onApplicationUpdate();                                                                                                                                                       
                                                                                                                                                                                      
-      } catch (error) {                                                                                                                                                              
+      } catch (error: any) {
         toast.dismiss();                                                                                                                                                             
-        toast.error('Failed to approve application');                                                                                                                                
+        const msg = error?.message || JSON.stringify(error) || 'Unknown error';
+        toast.error(`Failed to approve application: ${msg}`);
         console.error('Error approving application:', error);                                                                                                                        
       } finally {                                                                                                                                                                    
         setProcessingApplicationIds(prev => prev.filter(id => id !== applicationId));                                                                                                

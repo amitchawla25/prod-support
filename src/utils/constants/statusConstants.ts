@@ -2,8 +2,8 @@
 // Application Status
 export const MATCH_STATUSES = {
   PENDING: 'pending',
-  APPROVED_BY_CLIENT: 'approved_by_client',
-  REJECTED_BY_CLIENT: 'rejected_by_client',
+  APPROVED_BY_CLIENT: 'approved',
+  REJECTED_BY_CLIENT: 'rejected',
   COMPLETED: 'completed',
   CANCELLED: 'cancelled'
 };

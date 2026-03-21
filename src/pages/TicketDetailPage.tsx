@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import Layout from '../components/Layout';
 import { HelpRequest } from '../types/helpRequest';
 import { Button } from '../components/ui/button';
+import { Skeleton } from '../components/ui/skeleton';
 import { supabase } from '../integrations/supabase/client';
 import TicketHeader from '../components/developer-ticket-detail/TicketHeader';
 import TicketStatusPanel from '../components/developer-ticket-detail/TicketStatusPanel';
@@ -25,26 +26,27 @@ const TicketDetailPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated, userId, userType } = useAuth();
   const role = userType as "client" | "developer";
-  const [applications, setApplications] = useState<HelpRequestMatch[]>([]);                                                                                                          
-  const [isLoadingApplications, setIsLoadingApplications] = useState(false);                                                                                                         
-                                                                                                                                                                                     
-  const fetchApplications = useCallback(async () => {                                                                                                                                
-    if (!ticketId || role !== 'client') return;                                                                                                                                      
-                                                                                                                                                                                     
-    setIsLoadingApplications(true);                                                                                                                                                  
-    const { data } = await supabase                                                                                                                                                  
-      .from('help_request_matches')                                                                                                                                                  
-      .select(`*, profiles!developer_id(id, name, email, image, location)`)                                                                                                          
-      .eq('request_id', ticketId)                                                                                                                                                    
-      .order('created_at', { ascending: false });                                                                                                                                    
-                                                                                                                                                                                     
-    setApplications(data || []);                                                                                                                                                     
-    setIsLoadingApplications(false);                                                                                                                                                 
-  }, [ticketId, role]);                                                                                                                                                              
-                                                                                                                                                                                     
-  useEffect(() => {                                                                                                                                                                  
-    fetchApplications();                                                                                                                                                             
+  const [applications, setApplications] = useState<HelpRequestMatch[]>([]);
+  const [isLoadingApplications, setIsLoadingApplications] = useState(false);
+
+  const fetchApplications = useCallback(async () => {
+    if (!ticketId || role !== 'client') return;
+
+    setIsLoadingApplications(true);
+    const { data } = await supabase
+      .from('help_request_matches')
+      .select(`*, profiles!developer_id(id, name, email, image, location)`)
+      .eq('request_id', ticketId)
+      .order('created_at', { ascending: false });
+
+    setApplications(data || []);
+    setIsLoadingApplications(false);
+  }, [ticketId, role]);
+
+  useEffect(() => {
+    fetchApplications();
   }, [fetchApplications]);
+
   const [ticket, setTicket] = useState<HelpRequest | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -54,18 +56,6 @@ const TicketDetailPage = () => {
   const [applicationStatus, setApplicationStatus] = useState<string | null>(null);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
   const [showQADialog, setShowQADialog] = useState(false);
-
- 
-
-  console.log('[TicketDetailPage] Initializing with:', { 
-    userType, 
-    role,
-    ticketId,
-    isAuthenticated
-  });
-
-  const isAwaitingDeveloperApproval = ticket?.status === 'awaiting_client_approval' || 
-                                      ticket?.status === 'dev_requested';
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -87,9 +77,7 @@ const TicketDetailPage = () => {
 
   useEffect(() => {
     if (!ticketId || !isAuthenticated) return;
-    
-    console.log('[TicketDetailPage] Setting up realtime subscription for ticket:', ticketId);
-    
+
     const channel = supabase
       .channel(`ticket-updates-${ticketId}`)
       .on(
@@ -100,15 +88,13 @@ const TicketDetailPage = () => {
           table: 'help_requests',
           filter: `id=eq.${ticketId}`,
         },
-        (payload) => {
-          console.log('[TicketDetailPage] Received ticket update:', payload);
+        () => {
           fetchTicket();
         }
       )
       .subscribe();
 
     return () => {
-      console.log('[TicketDetailPage] Cleaning up realtime subscription');
       supabase.removeChannel(channel);
     };
   }, [ticketId, isAuthenticated]);
@@ -117,7 +103,6 @@ const TicketDetailPage = () => {
     if (role !== "developer" || !isAuthenticated || !userId || !ticketId) return;
 
     const checkApplicationStatus = async () => {
-      console.log('[TicketDetailPage] Checking application status for developer:', userId);
       try {
         const { data: matchData, error: matchError } = await supabase
           .from('help_request_matches')
@@ -126,25 +111,20 @@ const TicketDetailPage = () => {
           .eq('developer_id', userId)
           .maybeSingle();
 
-        if (matchError) {
-          console.error('[TicketDetailPage] Error checking application status:', matchError);
-          return;
-        }
-        
+        if (matchError) return;
+
         if (matchData) {
-          console.log('[TicketDetailPage] Application found with status:', matchData.status);
           setHasApplied(true);
           setApplicationStatus(matchData.status);
         } else {
-          console.log('[TicketDetailPage] No application found');
           setHasApplied(false);
           setApplicationStatus(null);
         }
-      } catch (err) {
-        console.error('[TicketDetailPage] Exception checking application status:', err);
+      } catch {
+        // silently ignore
       }
     };
-    
+
     checkApplicationStatus();
   }, [role, isAuthenticated, userId, ticketId]);
 
@@ -155,7 +135,6 @@ const TicketDetailPage = () => {
       return;
     }
     try {
-      console.log('[TicketDetailPage] Fetching ticket data for:', ticketId);
       setIsLoading(true);
       const { data, error } = await supabase
         .from('help_requests')
@@ -164,16 +143,13 @@ const TicketDetailPage = () => {
         .maybeSingle();
 
       if (error || !data) {
-        console.error('[TicketDetailPage] Error fetching ticket:', error);
         setError(error?.message || 'Ticket not found');
         setIsLoading(false);
         return;
       }
-      
-      console.log('[TicketDetailPage] Successfully fetched ticket data:', data);
+
       setTicket(data as HelpRequest);
-    } catch (err) {
-      console.error('[TicketDetailPage] Exception fetching ticket:', err);
+    } catch {
       setError('Failed to load ticket');
     } finally {
       setIsLoading(false);
@@ -192,7 +168,6 @@ const TicketDetailPage = () => {
       navigate('/login', { state: { returnTo: `/tickets/${ticketId}` } });
       return;
     }
-    console.log('[TicketDetailPage] Opening application modal');
     setShowApplicationModal(true);
   };
 
@@ -201,8 +176,7 @@ const TicketDetailPage = () => {
     setHasApplied(true);
     setApplicationStatus('pending');
     toast.success('Your application has been submitted successfully!');
-    console.log('[TicketDetailPage] Application submitted successfully');
-    
+
     if (isAuthenticated && userId && ticketId) {
       const { data } = await supabase
         .from('help_request_matches')
@@ -217,7 +191,7 @@ const TicketDetailPage = () => {
   };
 
   const handleSubmitQA = () => { setShowQADialog(true); };
-  
+
   const handleQASubmitted = async () => {
     setShowQADialog(false);
     toast.success('QA submitted successfully');
@@ -232,12 +206,19 @@ const TicketDetailPage = () => {
   if (isLoading) {
     return (
       <Layout>
-        <div className="container max-w-5xl mx-auto py-8 px-4">
-          <h1 className="text-2xl font-bold">Loading ticket details...</h1>
-          <div className="animate-pulse space-y-4">
-            <div className="h-12 bg-gray-200 rounded w-3/4"></div>
-            <div className="h-64 bg-gray-200 rounded"></div>
-            <div className="h-32 bg-gray-200 rounded"></div>
+        <div className="container max-w-5xl mx-auto py-8 px-4 space-y-6">
+          <Skeleton className="h-10 w-2/3" />
+          <Skeleton className="h-6 w-1/3" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-4">
+              <Skeleton className="h-48 w-full rounded-lg" />
+              <Skeleton className="h-32 w-full rounded-lg" />
+              <Skeleton className="h-48 w-full rounded-lg" />
+            </div>
+            <div className="space-y-4">
+              <Skeleton className="h-40 w-full rounded-lg" />
+              <Skeleton className="h-28 w-full rounded-lg" />
+            </div>
           </div>
         </div>
       </Layout>
@@ -271,8 +252,6 @@ const TicketDetailPage = () => {
     );
   }
 
-  console.log('[TicketDetailPage] Rendering with role:', role, 'ticket:', ticket?.id, 'hasApplied:', hasApplied, 'applicationStatus:', applicationStatus);
-
   return (
     <Layout>
       <div className="container max-w-5xl mx-auto py-8 px-4">
@@ -288,7 +267,7 @@ const TicketDetailPage = () => {
               ...ticket,
               technical_area: ticket.technical_area || [],
             }} userRole={role} />
-            
+
             <CommentsSection
               visible={true}
               ticket={ticket}
@@ -296,61 +275,60 @@ const TicketDetailPage = () => {
               userId={userId || ""}
               role={role}
             />
-            
+
             <HistorySection ticketId={ticket.id} ticket={ticket} />
           </div>
-          
+
           <div className="space-y-6">
-           {role === "client" && ticketId && applications?.length > 0 && (                                                                                                                     
-    <DeveloperApplicationsPanel                                                                                                                                                      
-      applications={applications}                                                                                                                                                    
-      ticketId={ticketId}                                                                                                                                                            
-      clientId={userId || ""}                                                                                                                                                        
-      isLoading={isLoadingApplications}                                                                                                                                              
-      onApplicationUpdate={() => {                                                                                                                                                       
-    fetchApplications();                                                                                                                                                             
-    fetchLatestTicketData();                                                                                                                                                         
-  }}                                                                                                                                       
-      onOpenChat={(developerId, developerName) =>                                                                                                                                    
-        navigate(`/chat/${ticketId}?with=${developerId}&name=${developerName || 'Developer'}`)}                                                                                      
-    />                                                                                                                                                                               
-  )}  
+            {role === "client" && ticketId && applications?.length > 0 && (
+              <DeveloperApplicationsPanel
+                applications={applications}
+                ticketId={ticketId}
+                clientId={userId || ""}
+                isLoading={isLoadingApplications}
+                onApplicationUpdate={() => {
+                  fetchApplications();
+                  fetchLatestTicketData();
+                }}
+                onOpenChat={(developerId, developerName) =>
+                  navigate(`/chat/${ticketId}?with=${developerId}&name=${developerName || 'Developer'}`)}
+              />
+            )}
             <ClientEditSection
               visible={role === "client"}
               status={ticket.status}
               ticket={ticket}
               onTicketUpdated={setTicket}
-              canSubmitQA={ticket.status === "in_progress" && role === "developer"}
+              canSubmitQA={false}
               onSubmitQA={handleSubmitQA}
               formatDate={formatDate}
             />
 
-            {/* Show status transitions for both client and developer */}                                                                                                                      
-  {(ticket.status === 'in_progress' ||                                                                                                                                               
-    ticket.status === 'ready_for_client_qa' ||                                                                                                                                       
-    ticket.status === 'reopened') &&                                                                                                                                                 
-    (role === 'developer' || role === 'client') ? (                                                                                                                                  
-    <StatusTransitionDropdown                                                                                                                                                        
-      ticketId={ticketId!}                                                                                                                                                           
-      currentStatus={ticket.status}                                                                                                                                                  
-      userRole={role}                                                                                                                                                                
-      onStatusChange={async () => {                                                                                                                                                  
-        await fetchTicket();                                                                                                                                                         
-        await fetchApplications();                                                                                                                                                   
-      }}                                                                                                                                                                             
-    />                                                                                                                                                                               
-  ) : (                                                                                                                                                                              
-    <TicketActionsPanel                                                                                                                                                              
-      role={role}                                                                                                                                                                    
-      ticket={ticket}                                                                                                                                                                
-      ticketId={ticketId}                                                                                                                                                            
-      userId={userId || ""}                                                                                                                                                          
-      applicationStatus={applicationStatus}                                                                                                                                          
-      hasApplied={hasApplied}                                                                                                                                                        
-      onApply={handleApplyClick}                                                                                                                                                     
-      fetchLatestTicketData={fetchLatestTicketData}                                                                                                                                  
-    />                                                                                                                                                                               
-  )}               
+            {(ticket.status === 'in_progress' ||
+              ticket.status === 'ready_for_client_qa' ||
+              ticket.status === 'reopened') &&
+              (role === 'developer' || role === 'client') ? (
+              <StatusTransitionDropdown
+                ticketId={ticketId!}
+                currentStatus={ticket.status}
+                userRole={role}
+                onStatusChange={async () => {
+                  await fetchTicket();
+                  await fetchApplications();
+                }}
+              />
+            ) : (
+              <TicketActionsPanel
+                role={role}
+                ticket={ticket}
+                ticketId={ticketId}
+                userId={userId || ""}
+                applicationStatus={applicationStatus}
+                hasApplied={hasApplied}
+                onApply={handleApplyClick}
+                fetchLatestTicketData={fetchLatestTicketData}
+              />
+            )}
           </div>
         </div>
       </div>

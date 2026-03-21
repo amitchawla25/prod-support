@@ -91,7 +91,7 @@ const TicketDetails: React.FC<Props> = ({ ticket, userRole = "client" }) => {
                 <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Estimated Duration
                 </h3>
-                <p>{estimated_duration} minutes</p>
+                <p>{estimated_duration} hour{estimated_duration !== 1 ? 's' : ''}</p>
               </div>
             )}
             {budget_range && (

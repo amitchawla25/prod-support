@@ -44,7 +44,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, featuredSize = 'norm
 
   return (
     <Card className={`overflow-hidden transition-shadow hover:shadow-md ${featured ? 'border-primary/50 bg-primary/5' : ''}`}>
-      <Link to={`/developer/${id}`} className="block">
+      <Link to={`/developer-profiles/${id}`} className="block">
         <div className="p-6">
           <div className="flex items-start gap-4">
             <Avatar className={`border-2 border-background ${featuredSize === 'large' ? 'h-16 w-16' : 'h-12 w-12'}`}>

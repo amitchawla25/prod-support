@@ -13,6 +13,7 @@ import { useAuth } from '../contexts/auth';
 import HelpRequestHistoryDialog from '../components/help/HelpRequestHistoryDialog';
 import DeveloperApplicationModal from '../components/apply/DeveloperApplicationModal';
 import DeveloperQADialog from '../components/help/DeveloperQADialog';
+import PostSessionRatingModal from '../components/help/PostSessionRatingModal';
 
 import TicketActionsPanel from '../components/ticket-detail/TicketActionsPanel';
 import CommentsSection from '../components/ticket-detail/CommentsSection';
@@ -57,6 +58,8 @@ const TicketDetailPage = () => {
   const [applicationStatus, setApplicationStatus] = useState<string | null>(null);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
   const [showQADialog, setShowQADialog] = useState(false);
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [hasRated, setHasRated] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -158,6 +161,19 @@ const TicketDetailPage = () => {
   };
 
   const fetchLatestTicketData = fetchTicket;
+
+  // Show rating modal when a client's ticket is resolved and they haven't rated yet
+  useEffect(() => {
+    if (
+      ticket?.status === 'resolved' &&
+      role === 'client' &&
+      ticket.selected_developer_id &&
+      !hasRated &&
+      !showRatingModal
+    ) {
+      setShowRatingModal(true);
+    }
+  }, [ticket?.status, role, ticket?.selected_developer_id, hasRated]);
 
   const shortTicketId = ticket?.id ? `HELP-${ticket.id.substring(0, 8)}` : "Unknown ID";
 
@@ -362,6 +378,19 @@ const TicketDetailPage = () => {
           requestId={ticketId}
           userId={userId}
           onSuccess={handleApplicationSuccess}
+        />
+      )}
+      {showRatingModal && ticket?.selected_developer_id && (
+        <PostSessionRatingModal
+          isOpen={showRatingModal}
+          ticketId={ticket.id}
+          ticketTitle={ticket.title || ''}
+          clientId={userId || ''}
+          developerId={ticket.selected_developer_id}
+          onClose={() => {
+            setShowRatingModal(false);
+            setHasRated(true);
+          }}
         />
       )}
     </Layout>

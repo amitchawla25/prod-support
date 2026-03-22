@@ -156,9 +156,36 @@ export const createNotification = async (notification: {
     return { success: true, data };
   } catch (error) {
     console.error('Exception creating notification:', error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
     };
+  }
+};
+
+export const sendEmailNotification = async (payload: {
+  type: 'new_application' | 'application_approved' | 'ticket_resolved';
+  recipient_user_id: string;
+  data: {
+    ticket_title: string;
+    ticket_id: string;
+    developer_name?: string;
+    client_name?: string;
+  };
+}) => {
+  try {
+    const { data, error } = await supabase.functions.invoke('send-email-notification', {
+      body: payload,
+    });
+
+    if (error) {
+      console.error('Error sending email notification:', error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    console.error('Exception sending email notification:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
   }
 };

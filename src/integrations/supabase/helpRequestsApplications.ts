@@ -3,6 +3,7 @@ import { MATCH_STATUSES } from '../../utils/constants/statusConstants';
 import { toast } from 'sonner';
 import { DeveloperProfile } from '../../types/helpRequest';
 import { isDeveloperProfile, safelyGetProperty } from '../../utils/typeGuards';
+import { sendEmailNotification } from './notifications';
 
 // Export valid match statuses for use in other components
 export const VALID_MATCH_STATUSES = MATCH_STATUSES;
@@ -37,10 +38,11 @@ export const updateApplicationStatus = async (
       };
     }
 
-    // If approved, reject all other applications
+    // If approved, reject all other applications and notify the developer
     if (status === 'approved' && data && data[0]) {
       const requestId = data[0].request_id;
-      
+      const developerId = data[0].developer_id;
+
       await supabase
         .from('help_request_matches')
         .update({
@@ -49,6 +51,37 @@ export const updateApplicationStatus = async (
         })
         .eq('request_id', requestId)
         .neq('id', applicationId);
+
+      // Fire email notification to the developer (non-blocking)
+      (async () => {
+        try {
+          const { data: request } = await supabase
+            .from('help_requests')
+            .select('title, client_id')
+            .eq('id', requestId)
+            .single();
+
+          const { data: clientProfile } = await supabase
+            .from('profiles')
+            .select('name')
+            .eq('id', userId)
+            .single();
+
+          if (developerId && request?.title) {
+            await sendEmailNotification({
+              type: 'application_approved',
+              recipient_user_id: developerId,
+              data: {
+                ticket_title: request.title,
+                ticket_id: requestId,
+                client_name: clientProfile?.name || 'A client',
+              },
+            });
+          }
+        } catch (e) {
+          console.error('[helpRequestsApplications] Email notification error (non-fatal):', e);
+        }
+      })();
     }
 
     return {
@@ -212,6 +245,37 @@ export const submitDeveloperApplication = async (
       console.error('[helpRequestsApplications] Error updating help request status:', updateError);
       // Continue even if this fails, as the application was created
     }
+
+    // Fire email notification to the client (non-blocking)
+    (async () => {
+      try {
+        const { data: request } = await supabase
+          .from('help_requests')
+          .select('client_id, title')
+          .eq('id', requestId)
+          .single();
+
+        const { data: devProfile } = await supabase
+          .from('profiles')
+          .select('name')
+          .eq('id', developerId)
+          .single();
+
+        if (request?.client_id && request?.title) {
+          await sendEmailNotification({
+            type: 'new_application',
+            recipient_user_id: request.client_id,
+            data: {
+              ticket_title: request.title,
+              ticket_id: requestId,
+              developer_name: devProfile?.name || 'A developer',
+            },
+          });
+        }
+      } catch (e) {
+        console.error('[helpRequestsApplications] Email notification error (non-fatal):', e);
+      }
+    })();
 
     return {
       success: true,

@@ -30,6 +30,28 @@ const DeveloperProfilePage = () => {
   const [publicLoading, setPublicLoading] = useState(!isOwnProfile);
   const [publicError, setPublicError] = useState(false);
 
+  // Ratings from session_summaries
+  const [avgRating, setAvgRating] = useState<number | null>(null);
+  const [reviewCount, setReviewCount] = useState(0);
+  const [reviews, setReviews] = useState<{ rating: number; feedback: string | null; created_at: string }[]>([]);
+
+  const fetchRatings = async (developerId: string) => {
+    const { data } = await supabase
+      .from('session_summaries')
+      .select('rating, feedback, created_at')
+      .eq('developer_id', developerId)
+      .not('rating', 'is', null)
+      .order('created_at', { ascending: false })
+      .limit(5);
+
+    if (data && data.length > 0) {
+      const sum = data.reduce((acc, r) => acc + (r.rating ?? 0), 0);
+      setAvgRating(Math.round((sum / data.length) * 10) / 10);
+      setReviewCount(data.length);
+      setReviews(data as { rating: number; feedback: string | null; created_at: string }[]);
+    }
+  };
+
   useEffect(() => {
     if (isOwnProfile || !id) return;
 
@@ -79,6 +101,8 @@ const DeveloperProfilePage = () => {
             lastActive: profile.last_active || '',
           } as Developer);
         }
+
+        if (!cancelled) await fetchRatings(id);
       } catch {
         if (!cancelled) setPublicError(true);
       } finally {
@@ -89,6 +113,10 @@ const DeveloperProfilePage = () => {
     fetchPublicProfile();
     return () => { cancelled = true; };
   }, [id, isOwnProfile]);
+
+  useEffect(() => {
+    if (isOwnProfile && userId) fetchRatings(userId);
+  }, [isOwnProfile, userId]);
 
   // Resolve which data to show
   const developer = isOwnProfile ? ownProfile.developer : publicDeveloper;
@@ -229,12 +257,18 @@ const DeveloperProfilePage = () => {
                       </div>
                     )}
 
-                    {developer.rating != null && (
+                    {avgRating !== null ? (
+                      <div className="flex items-center gap-1.5 text-sm text-amber-500">
+                        <Star className="h-4 w-4 fill-amber-500" />
+                        {avgRating.toFixed(1)}
+                        <span className="text-muted-foreground">({reviewCount} {reviewCount === 1 ? 'review' : 'reviews'})</span>
+                      </div>
+                    ) : developer.rating != null ? (
                       <div className="flex items-center gap-1.5 text-sm text-amber-500">
                         <Star className="h-4 w-4 fill-amber-500" />
                         {Number(developer.rating).toFixed(1)}
                       </div>
-                    )}
+                    ) : null}
                   </div>
                 </div>
               </div>
@@ -274,6 +308,34 @@ const DeveloperProfilePage = () => {
                           <span className="font-medium">${developer.minuteRate}</span>/minute
                         </div>
                       )}
+                    </div>
+                  </div>
+                )}
+
+                {reviews.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-medium mb-3">Reviews</h3>
+                    <div className="space-y-3">
+                      {reviews.map((review, i) => (
+                        <div key={i} className="bg-secondary/40 rounded-lg p-4">
+                          <div className="flex items-center gap-1 mb-1">
+                            {[1, 2, 3, 4, 5].map((s) => (
+                              <Star
+                                key={s}
+                                className="h-3.5 w-3.5"
+                                fill={s <= review.rating ? '#FBBF24' : 'none'}
+                                stroke={s <= review.rating ? '#FBBF24' : '#9CA3AF'}
+                              />
+                            ))}
+                            <span className="text-xs text-muted-foreground ml-2">
+                              {new Date(review.created_at).toLocaleDateString()}
+                            </span>
+                          </div>
+                          {review.feedback && (
+                            <p className="text-sm text-muted-foreground">{review.feedback}</p>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}

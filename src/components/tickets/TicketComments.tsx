@@ -69,7 +69,7 @@ const TicketComments: React.FC<TicketCommentsProps> = ({
         .from('ticket_comments')
         .select(`
           *,
-          user:user_id (id, name, image)
+          user:user_id (id, name, image, user_type)
         `)
         .eq('ticket_id', ticketId)
         .order('created_at', { ascending: true });
@@ -98,7 +98,6 @@ const TicketComments: React.FC<TicketCommentsProps> = ({
             ticket_id: ticketId,
             user_id: userId,
             content: newComment.trim(),
-            role: role,
           },
         ]);
 
@@ -120,15 +119,15 @@ const TicketComments: React.FC<TicketCommentsProps> = ({
     }
   };
 
-  const getRoleBadge = (commentRole?: string) => {
-    if (commentRole === 'developer') {
+  const getRoleBadge = (userType?: string) => {
+    if (userType === 'developer') {
       return (
         <Badge variant="outline" className="text-xs py-0 px-1.5 border-violet-300 text-violet-700 bg-violet-50 dark:border-violet-700 dark:text-violet-300 dark:bg-violet-950">
           Developer
         </Badge>
       );
     }
-    if (commentRole === 'client') {
+    if (userType === 'client') {
       return (
         <Badge variant="outline" className="text-xs py-0 px-1.5 border-blue-300 text-blue-700 bg-blue-50 dark:border-blue-700 dark:text-blue-300 dark:bg-blue-950">
           Client
@@ -180,7 +179,7 @@ const TicketComments: React.FC<TicketCommentsProps> = ({
                 <div className={`flex flex-col gap-1 max-w-[75%] ${isOwnComment ? 'items-end' : 'items-start'}`}>
                   <div className={`flex items-center gap-2 ${isOwnComment ? 'flex-row-reverse' : ''}`}>
                     <span className="text-sm font-medium">{isOwnComment ? 'You' : userName}</span>
-                    {getRoleBadge(comment.role)}
+                    {getRoleBadge(comment.user?.user_type)}
                     <span className="text-xs text-muted-foreground">
                       {comment.created_at
                         ? formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })

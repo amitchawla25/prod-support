@@ -243,7 +243,7 @@ const TicketSidebar: React.FC<TicketSidebarProps> = ({
                   Estimated Duration
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  {ticket.estimated_duration} minutes
+                  {ticket.estimated_duration} hour{ticket.estimated_duration !== 1 ? 's' : ''}
                 </p>
               </div>
               <div>

@@ -150,7 +150,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "ProdSupport <notifications@prodsupport.dev>",
+        from: "ProdSupport <onboarding@resend.dev>",
         to: [recipientEmail],
         subject,
         html,

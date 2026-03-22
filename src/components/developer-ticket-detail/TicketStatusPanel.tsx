@@ -17,6 +17,20 @@ import { HELP_REQUEST_STATUSES } from "../../utils/constants/statusConstants";
 const TicketStatusPanel: React.FC<{ ticket: HelpRequest }> = ({ ticket }) => {
   // Special status messages
   const statusMessages = {
+    [HELP_REQUEST_STATUSES.OPEN]: {
+      bg: "bg-blue-50 border-blue-200",
+      icon: Users,
+      iconColor: "text-blue-600",
+      title: "Open — Accepting Applications",
+      description: "This ticket is open. Developers can apply to work on it."
+    },
+    [HELP_REQUEST_STATUSES.AWAITING_CLIENT_APPROVAL]: {
+      bg: "bg-yellow-50 border-yellow-200",
+      icon: ClipboardCheck,
+      iconColor: "text-yellow-600",
+      title: "Pending Your Approval",
+      description: "A developer has applied. Review their application in the sidebar and approve or reject."
+    },
     [HELP_REQUEST_STATUSES.REQUIREMENTS_REVIEW]: {
       bg: "bg-blue-50 border-blue-200",
       icon: FileQuestion,

@@ -29,7 +29,7 @@ const ClientOnboarding: React.FC = () => {
         
         if (userData.profileCompleted) {
           // Profile already completed, redirect to dashboard
-          navigate('/client-dashboard');
+          navigate('/client/dashboard');
           return;
         }
         

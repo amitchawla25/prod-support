@@ -31,6 +31,9 @@ export interface HelpRequest {
   qa_complete_time?: string;
   client_review_start_time?: string;
   client_review_complete_time?: string;
+
+  // Time tracking
+  in_progress_at?: string;
 }
 
 export interface HelpSession {

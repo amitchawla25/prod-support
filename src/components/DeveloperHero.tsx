@@ -69,7 +69,7 @@ const DeveloperHero: React.FC = () => {
           <div className="flex flex-col sm:flex-row justify-center gap-5 mb-8">
             <Button 
               size="lg"
-              onClick={() => navigate('/developer-dashboard')}
+              onClick={() => navigate('/developer/dashboard')}
               className="bg-[#1E3A8A] text-white rounded-full hover:bg-[#1E3A8A]/90 shadow-md font-medium"
             >
               Browse All Available Tickets

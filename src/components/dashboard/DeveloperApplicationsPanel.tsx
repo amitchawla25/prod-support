@@ -61,7 +61,8 @@
           .from('help_requests')                                                                                                                                                     
           .update({                                                                                                                                                                  
             status: 'in_progress',                                                                                                                                                   
-            selected_developer_id: application.developer_id                                                                                                                                   
+            selected_developer_id: application.developer_id,
+            in_progress_at: new Date().toISOString(),                                                                                                                                   
           })                                                                                                                                                                         
           .eq('id', ticketId);
                                                                                                                                                                                      

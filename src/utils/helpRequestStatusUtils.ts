@@ -20,7 +20,7 @@ const canonicalStatus = (status: string): string => {
 
 export const getTicketStatusStyles = (status: string) => {
   const key = canonicalStatus(status) as keyof typeof TicketStatusColors;
-  return TicketStatusColors[key] || 'bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium';
+  return TicketStatusColors[key] || 'bg-gray-200 text-gray-900 border border-gray-300 px-2 py-1 rounded-full text-xs font-medium';
 };
 
 export const formatTicketStatus = (status: string) => {

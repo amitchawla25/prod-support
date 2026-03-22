@@ -42,7 +42,7 @@ const HelpRequestForm: React.FC = () => {
           </AlertDescription>
         </Alert>
         <div className="text-center mt-8">
-          <a href="/developer-dashboard" className="text-primary hover:text-primary/80">
+          <a href="/developer/dashboard" className="text-primary hover:text-primary/80">
             Return to developer dashboard
           </a>
         </div>

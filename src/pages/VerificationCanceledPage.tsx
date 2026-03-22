@@ -35,7 +35,7 @@ const VerificationCanceledPage = () => {
                   </Button>
                   <Button 
                     variant="outline" 
-                    onClick={() => navigate('/developer-dashboard')}
+                    onClick={() => navigate('/developer/dashboard')}
                     className="w-full"
                   >
                     Go to Dashboard

@@ -194,20 +194,6 @@ export const loginWithEmailAndPassword = async (
       };
     }
     
-    // Check if email is verified
-    if (data.user.email_confirmed_at === null) {
-      recordLoginAttempt(email, false);
-      console.log('User email is not verified');
-      // Sign out user since email is not verified
-      await supabase.auth.signOut();
-      
-      return {
-        success: false,
-        error: 'Please verify your email before logging in.',
-        requiresVerification: true
-      };
-    }
-
     // Step 2: Check for cached profile data to avoid an extra DB query
     const userId = data.user.id;
     const cachedProfile = profileCache.get(userId);

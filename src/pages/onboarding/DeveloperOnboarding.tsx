@@ -54,7 +54,7 @@ const DeveloperOnboarding: React.FC = () => {
         if (userData.profileCompleted) {
           // Profile already completed, redirect to dashboard
           console.log('Profile already marked complete, redirecting to dashboard');
-          navigate('/developer-dashboard');
+          navigate('/developer/dashboard');
           return;
         }
         

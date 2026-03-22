@@ -138,10 +138,10 @@ export const OnboardingProvider: React.FC<OnboardingProviderProps> = ({
         // Redirect based on user type - use the specific path names
         if (userType === 'client') {
           console.log('Redirecting to client dashboard after onboarding');
-          navigate('/client-dashboard', { replace: true });
+          navigate('/client/dashboard', { replace: true });
         } else {
           console.log('Redirecting to developer dashboard after onboarding');
-          navigate('/developer-dashboard', { replace: true });
+          navigate('/developer/dashboard', { replace: true });
         }
         
         return true;
@@ -161,9 +161,9 @@ export const OnboardingProvider: React.FC<OnboardingProviderProps> = ({
   const skipOnboarding = () => {
     toast.info('You can complete your profile later from your settings');
     if (userType === 'client') {
-      navigate('/client-dashboard');
+      navigate('/client/dashboard');
     } else {
-      navigate('/developer-dashboard');
+      navigate('/developer/dashboard');
     }
   };
   

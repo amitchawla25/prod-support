@@ -60,12 +60,12 @@ const TicketHistoryPanel: React.FC<TicketHistoryPanelProps> = ({
   
   const getStatusBadgeColor = (status: string) => {
     switch (status?.toLowerCase()) {
-      case 'open': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'in_progress': return 'bg-green-100 text-green-800 border-green-200';
-      case 'completed': return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'cancelled': return 'bg-red-100 text-red-800 border-red-200';
-      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'open': return 'bg-blue-200 text-blue-900 border-blue-300';
+      case 'in_progress': return 'bg-green-200 text-green-900 border-green-300';
+      case 'completed': return 'bg-purple-200 text-purple-900 border-purple-300';
+      case 'cancelled': return 'bg-red-200 text-red-900 border-red-300';
+      case 'pending': return 'bg-yellow-200 text-yellow-900 border-yellow-300';
+      default: return 'bg-gray-200 text-gray-900 border-gray-300';
     }
   };
   

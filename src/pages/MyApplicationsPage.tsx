@@ -56,7 +56,7 @@ const MyApplicationsPage = () => {
 
   useEffect(() => {
     if (isAuthenticated && userType !== 'developer') {
-      navigate('/client-dashboard');
+      navigate('/client/dashboard');
       return;
     }
     

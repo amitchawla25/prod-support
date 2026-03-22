@@ -35,7 +35,7 @@ const HelpRequestSuccess: React.FC = () => {
         
         <div className="flex flex-col md:flex-row gap-4 justify-center">
           <Button
-            onClick={() => navigate('/get-help/tracking')}
+            onClick={() => navigate('/client/tickets')}
             className="flex items-center justify-center gap-2"
           >
             <ListChecks className="h-5 w-5" />
@@ -110,7 +110,7 @@ const HelpRequestSuccess: React.FC = () => {
         
         <div className="flex flex-col sm:flex-row gap-4 justify-between mt-8">
           <Button
-            onClick={() => navigate('/get-help/tracking')}
+            onClick={() => navigate('/client/tickets')}
             className="flex items-center justify-center gap-2"
           >
             <ListChecks className="h-5 w-5" />

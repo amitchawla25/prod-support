@@ -348,6 +348,7 @@ export const assignDeveloperToRequest = async (
         .update({
           selected_developer_id: developerId,
           status: 'in_progress',
+          in_progress_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         })
         .eq('id', requestId)

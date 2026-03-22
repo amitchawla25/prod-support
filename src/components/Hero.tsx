@@ -17,9 +17,9 @@ const Hero: React.FC = () => {
       setIsLoading(true);
       
       if (isAuthenticated && userType === 'client') {
-        navigate('/client-dashboard');
+        navigate('/client/dashboard');
       } else if (isAuthenticated && userType === 'developer') {
-        navigate('/developer-dashboard');
+        navigate('/developer/dashboard');
       } else {
         navigate('/register', { state: { userType: 'client' } });
       }
@@ -32,7 +32,7 @@ const Hero: React.FC = () => {
   };
   
   const handleBrowseRequests = () => {
-    navigate('/developer-dashboard');
+    navigate('/developer/dashboard');
   };
 
   return (

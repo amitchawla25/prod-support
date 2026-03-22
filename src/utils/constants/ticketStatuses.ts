@@ -33,11 +33,11 @@
                                                                                                                                                                                      
   // Status colors for badges                                                                                                                                                        
   export const TicketStatusColors: Record<TicketStatusType, string> = {                                                                                                              
-    [TicketStatus.OPEN]: 'bg-blue-100 text-blue-800',                                                                                                                                
-    [TicketStatus.AWAITING_CLIENT_APPROVAL]: 'bg-yellow-100 text-yellow-800',                                                                                                        
-    [TicketStatus.IN_PROGRESS]: 'bg-purple-100 text-purple-800',                                                                                                                     
-    [TicketStatus.READY_FOR_CLIENT_QA]: 'bg-orange-100 text-orange-800',                                                                                                             
-    [TicketStatus.RESOLVED]: 'bg-green-100 text-green-800',                                                                                                                          
-    [TicketStatus.REOPENED]: 'bg-red-100 text-red-800',                                                                                                                              
-    [TicketStatus.CANCELLED_BY_CLIENT]: 'bg-gray-100 text-gray-800',                                                                                                                 
+    [TicketStatus.OPEN]: 'bg-blue-200 text-blue-900 border border-blue-300',                                                                                                                                
+    [TicketStatus.AWAITING_CLIENT_APPROVAL]: 'bg-yellow-200 text-yellow-900 border border-yellow-300',                                                                                                        
+    [TicketStatus.IN_PROGRESS]: 'bg-purple-200 text-purple-900 border border-purple-300',                                                                                                                     
+    [TicketStatus.READY_FOR_CLIENT_QA]: 'bg-orange-200 text-orange-900 border border-orange-300',                                                                                                             
+    [TicketStatus.RESOLVED]: 'bg-green-200 text-green-900 border border-green-300',                                                                                                                          
+    [TicketStatus.REOPENED]: 'bg-red-200 text-red-900 border border-red-300',                                                                                                                              
+    [TicketStatus.CANCELLED_BY_CLIENT]: 'bg-gray-200 text-gray-900 border border-gray-300',                                                                                                                 
   };                                                              

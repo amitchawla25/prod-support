@@ -73,11 +73,11 @@ const ClientDashboard: React.FC = () => {
   }, [hasError]);
   
   const categorizeTickets = (tickets: HelpRequest[]): ClientTicketCategories => {
-    const activeTickets = tickets.filter(ticket => ticket.status === 'open' || ticket.status === 'pending');
-    const inProgressTickets = tickets.filter(ticket => ticket.status === 'accepted' || ticket.status === 'in_progress');
+    const activeTickets = tickets.filter(ticket => ticket.status === 'open' || ticket.status === 'awaiting_client_approval');
+    const inProgressTickets = tickets.filter(ticket => ticket.status === 'in_progress');
     const completedTickets = tickets.filter(ticket => ticket.status === 'resolved');
-    const cancelledTickets = tickets.filter(ticket => ticket.status === 'cancelled');
-    
+    const cancelledTickets = tickets.filter(ticket => ticket.status === 'cancelled_by_client');
+
     return {
       activeTickets,
       inProgressTickets,
@@ -145,37 +145,53 @@ const ClientDashboard: React.FC = () => {
                       title="Active Tickets"
                       tickets={clientTickets.activeTickets}
                       emptyMessage="No active tickets."
-                      onForceRefresh={handleForceRefresh}
+                      onClaimTicket={() => {}}
+                      userId={userId}
+                      isAuthenticated={isAuthenticated}
+                      viewMode="list"
+                      onRefresh={handleForceRefresh}
                     />
                   </TabsContent>
-                  
+
                   {/* In Progress tickets tab panel */}
                   <TabsContent value="inProgress">
                     <TicketSection
                       title="In Progress Tickets"
                       tickets={clientTickets.inProgressTickets}
                       emptyMessage="No tickets in progress."
-                      onForceRefresh={handleForceRefresh}
+                      onClaimTicket={() => {}}
+                      userId={userId}
+                      isAuthenticated={isAuthenticated}
+                      viewMode="list"
+                      onRefresh={handleForceRefresh}
                     />
                   </TabsContent>
-                  
+
                   {/* Completed tickets tab panel */}
                   <TabsContent value="completed">
                     <TicketSection
                       title="Completed Tickets"
                       tickets={clientTickets.completedTickets}
                       emptyMessage="No completed tickets."
-                      onForceRefresh={handleForceRefresh}
+                      onClaimTicket={() => {}}
+                      userId={userId}
+                      isAuthenticated={isAuthenticated}
+                      viewMode="list"
+                      onRefresh={handleForceRefresh}
                     />
                   </TabsContent>
-                  
+
                   {/* Cancelled tickets tab panel */}
                   <TabsContent value="cancelled">
                     <TicketSection
                       title="Cancelled Tickets"
                       tickets={clientTickets.cancelledTickets}
                       emptyMessage="No cancelled tickets."
-                      onForceRefresh={handleForceRefresh}
+                      onClaimTicket={() => {}}
+                      userId={userId}
+                      isAuthenticated={isAuthenticated}
+                      viewMode="list"
+                      onRefresh={handleForceRefresh}
                     />
                   </TabsContent>
                 </Tabs>

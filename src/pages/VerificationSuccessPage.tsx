@@ -100,9 +100,9 @@ const VerificationSuccessPage = () => {
   const handleContinue = () => {
     if (verificationStatus === 'success') {
       // Force refresh the profile page to show updated verification status
-      navigate('/developer-dashboard?refresh=true');
+      navigate('/developer/dashboard?refresh=true');
     } else {
-      navigate('/developer-dashboard');
+      navigate('/developer/dashboard');
     }
   };
 

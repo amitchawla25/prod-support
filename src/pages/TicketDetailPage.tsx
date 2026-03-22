@@ -20,6 +20,7 @@ import ClientEditSection from '../components/ticket-detail/ClientEditSection';
 import HistorySection from '../components/ticket-detail/HistorySection';
 import TicketDetails from '../components/tickets/TicketDetails';
 import DeveloperApplicationsPanel from '../components/dashboard/DeveloperApplicationsPanel';
+import DeadlineTracker from '../components/tickets/DeadlineTracker';
 
 const TicketDetailPage = () => {
   const { ticketId } = useParams<{ ticketId: string }>();
@@ -261,6 +262,14 @@ const TicketDetailPage = () => {
           ticket={ticket}
         />
         <TicketStatusPanel ticket={ticket} />
+        {ticket.status === 'in_progress' && ticket.in_progress_at && ticket.estimated_duration && (
+          <div className="mt-4">
+            <DeadlineTracker
+              inProgressAt={ticket.in_progress_at}
+              estimatedHours={ticket.estimated_duration}
+            />
+          </div>
+        )}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
           <div className="lg:col-span-2 space-y-6">
             <TicketDetails ticket={{

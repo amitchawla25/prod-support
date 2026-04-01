@@ -22,6 +22,10 @@ import HistorySection from '../components/ticket-detail/HistorySection';
 import TicketDetails from '../components/tickets/TicketDetails';
 import DeveloperApplicationsPanel from '../components/dashboard/DeveloperApplicationsPanel';
 import DeadlineTracker from '../components/tickets/DeadlineTracker';
+import KickoffQuestionsPanel from '../components/tickets/KickoffQuestionsPanel';
+import ClientActionRequired from '../components/tickets/ClientActionRequired';
+import SecureNoteComposer from '../components/tickets/SecureNoteComposer';
+import SecureNoteViewer from '../components/tickets/SecureNoteViewer';
 
 const TicketDetailPage = () => {
   const { ticketId } = useParams<{ ticketId: string }>();
@@ -60,6 +64,7 @@ const TicketDetailPage = () => {
   const [showQADialog, setShowQADialog] = useState(false);
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [hasRated, setHasRated] = useState(false);
+  const [showSecureNoteComposer, setShowSecureNoteComposer] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -319,6 +324,45 @@ const TicketDetailPage = () => {
                   navigate(`/chat/${ticketId}?with=${developerId}&name=${developerName || 'Developer'}`)}
               />
             )}
+            {/* Kickoff panels: shown when ticket is in_progress */}
+            {ticket.status === 'in_progress' && role === 'developer' && ticket.selected_developer_id === userId && (
+              <KickoffQuestionsPanel
+                ticketId={ticket.id}
+                ticketTitle={ticket.title || ''}
+                developerId={userId || ''}
+                clientId={ticket.client_id}
+              />
+            )}
+
+            {ticket.status === 'in_progress' && role === 'client' && ticket.selected_developer_id && (
+              <ClientActionRequired
+                ticketId={ticket.id}
+                ticketTitle={ticket.title || ''}
+                clientId={userId || ''}
+                developerId={ticket.selected_developer_id}
+              />
+            )}
+
+            {/* Secure notes */}
+            {ticket.status === 'in_progress' && role === 'client' && ticket.selected_developer_id && (
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setShowSecureNoteComposer(true)}
+                  className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                >
+                  Share a secure note with the developer
+                </button>
+              </div>
+            )}
+
+            {ticket.status === 'in_progress' && role === 'developer' && ticket.client_id && (
+              <SecureNoteViewer
+                ticketId={ticket.id}
+                recipientId={userId || ''}
+                senderId={ticket.client_id}
+              />
+            )}
+
             <ClientEditSection
               visible={role === "client"}
               status={ticket.status}
@@ -380,6 +424,17 @@ const TicketDetailPage = () => {
           onSuccess={handleApplicationSuccess}
         />
       )}
+      {showSecureNoteComposer && ticket?.selected_developer_id && (
+        <SecureNoteComposer
+          ticketId={ticket.id}
+          ticketTitle={ticket.title || ''}
+          senderId={userId || ''}
+          recipientId={ticket.selected_developer_id}
+          open={showSecureNoteComposer}
+          onOpenChange={setShowSecureNoteComposer}
+        />
+      )}
+
       {showRatingModal && ticket?.selected_developer_id && (
         <PostSessionRatingModal
           isOpen={showRatingModal}

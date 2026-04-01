@@ -3,7 +3,7 @@ import { MATCH_STATUSES } from '../../utils/constants/statusConstants';
 import { toast } from 'sonner';
 import { DeveloperProfile } from '../../types/helpRequest';
 import { isDeveloperProfile, safelyGetProperty } from '../../utils/typeGuards';
-import { sendEmailNotification } from './notifications';
+import { sendEmailNotification, createNotification } from './notifications';
 
 // Export valid match statuses for use in other components
 export const VALID_MATCH_STATUSES = MATCH_STATUSES;
@@ -80,6 +80,37 @@ export const updateApplicationStatus = async (
           }
         } catch (e) {
           console.error('[helpRequestsApplications] Email notification error (non-fatal):', e);
+        }
+      })();
+
+      // Create in-app notifications for both parties (non-blocking)
+      (async () => {
+        try {
+          const { data: notifRequest } = await supabase
+            .from('help_requests')
+            .select('title, client_id')
+            .eq('id', requestId)
+            .single();
+
+          if (notifRequest && developerId) {
+            await createNotification({
+              user_id: developerId,
+              related_entity_id: requestId,
+              entity_type: 'help_request',
+              title: 'Application Accepted',
+              message: `Your application for "${notifRequest.title}" was accepted. You can now get started.`,
+            });
+
+            await createNotification({
+              user_id: notifRequest.client_id,
+              related_entity_id: requestId,
+              entity_type: 'help_request',
+              title: 'Ticket Now In Progress',
+              message: `A developer has been accepted for "${notifRequest.title}" and work is beginning.`,
+            });
+          }
+        } catch (e) {
+          console.error('[helpRequestsApplications] In-app notification error (non-fatal):', e);
         }
       })();
     }

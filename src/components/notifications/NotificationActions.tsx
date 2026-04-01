@@ -111,13 +111,33 @@ const NotificationActions: React.FC<NotificationActionsProps> = ({
   if (notification.notification_type.startsWith('application_')) {
     return (
       <div className="mt-2">
-        <Button 
+        <Button
           size="sm"
           variant="outline"
           onClick={handleViewRequest}
           className="w-full"
         >
           View Request
+        </Button>
+      </div>
+    );
+  }
+
+  if (
+    notification.notification_type === 'ticket_accepted' ||
+    notification.notification_type === 'kickoff_questions_sent' ||
+    notification.notification_type === 'kickoff_answered' ||
+    notification.notification_type === 'secure_note_shared'
+  ) {
+    return (
+      <div className="mt-2">
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={handleViewRequest}
+          className="w-full"
+        >
+          View Ticket
         </Button>
       </div>
     );

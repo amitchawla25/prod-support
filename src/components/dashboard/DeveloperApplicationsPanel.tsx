@@ -7,7 +7,8 @@
   import { HelpRequestMatch } from '../../types/helpRequest';                                                                                                                        
   import { Skeleton } from '../ui/skeleton';                                                                                                                                         
   import { updateApplicationStatus } from '../../integrations/supabase/helpRequestsApplications';                                                                                    
-  import { supabase } from '../../integrations/supabase/client';                                                                                                                     
+  import { supabase } from '../../integrations/supabase/client';
+  import { createNotification, sendEmailNotification } from '../../integrations/supabase/notifications';                                                                                                                     
   import { toast } from 'sonner';                                                                                                                                                    
                                                                                                                                                                                      
   interface DeveloperApplicationsPanelProps {                                                                                                                                        
@@ -67,6 +68,52 @@
           .eq('id', ticketId);
                                                                                                                                                                                      
         if (ticketError) throw ticketError;                                                                                                                                          
+
+        // Fire in-app + email notifications non-blocking
+        (async () => {
+          try {
+            const { data: ticketData } = await supabase
+              .from('help_requests')
+              .select('title')
+              .eq('id', ticketId)
+              .single();
+
+            const { data: devProfile } = await supabase
+              .from('profiles')
+              .select('name')
+              .eq('id', application.developer_id)
+              .single();
+
+            if (ticketData?.title) {
+              await createNotification({
+                user_id: application.developer_id,
+                related_entity_id: ticketId,
+                entity_type: 'help_request',
+                title: 'Application Accepted',
+                message: `Your application for "${ticketData.title}" was accepted. You can now get started.`,
+              });
+
+              await createNotification({
+                user_id: clientId,
+                related_entity_id: ticketId,
+                entity_type: 'help_request',
+                title: 'Ticket Now In Progress',
+                message: `${devProfile?.name || 'A developer'} has been accepted and is now working on "${ticketData.title}".`,
+              });
+
+              await sendEmailNotification({
+                type: 'application_approved',
+                recipient_user_id: application.developer_id,
+                data: {
+                  ticket_title: ticketData.title,
+                  ticket_id: ticketId,
+                },
+              });
+            }
+          } catch (e) {
+            console.error('[DeveloperApplicationsPanel] Notification error (non-fatal):', e);
+          }
+        })();
                                                                                                                                                                                      
         toast.dismiss();                                                                                                                                                             
         toast.success('Developer application approved! Ticket is now in progress.');                                                                                                 

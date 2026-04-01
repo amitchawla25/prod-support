@@ -90,6 +90,8 @@ export const createSecureNote = async ({
       entity_type: 'help_request',
       title: 'Secure Note Shared',
       message: `A secure note has been shared with you for "${ticketTitle}". It is only viewable once and expires in 48 hours.`,
+      notification_type: 'secure_note_shared',
+      action_data: { request_id: ticketId, request_title: ticketTitle },
     });
 
     return { success: true, noteId: data?.id };

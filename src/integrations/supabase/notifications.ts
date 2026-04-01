@@ -141,6 +141,8 @@ export const createNotification = async (notification: {
   entity_type: string;
   title: string;
   message: string;
+  notification_type?: string;
+  action_data?: Record<string, unknown>;
 }) => {
   try {
     const { data, error } = await supabase

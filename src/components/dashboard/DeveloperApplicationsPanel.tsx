@@ -91,6 +91,8 @@
                 entity_type: 'help_request',
                 title: 'Application Accepted',
                 message: `Your application for "${ticketData.title}" was accepted. You can now get started.`,
+                notification_type: 'application_approved',
+                action_data: { request_id: ticketId, request_title: ticketData.title },
               });
 
               await createNotification({
@@ -99,6 +101,8 @@
                 entity_type: 'help_request',
                 title: 'Ticket Now In Progress',
                 message: `${devProfile?.name || 'A developer'} has been accepted and is now working on "${ticketData.title}".`,
+                notification_type: 'ticket_accepted',
+                action_data: { request_id: ticketId, request_title: ticketData.title },
               });
 
               await sendEmailNotification({

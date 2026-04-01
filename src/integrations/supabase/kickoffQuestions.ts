@@ -57,6 +57,8 @@ export const submitKickoffQuestions = async ({
       entity_type: 'help_request',
       title: 'Developer Needs Your Input',
       message: `The developer working on "${ticketTitle}" has questions before getting started. Please review and respond.`,
+      notification_type: 'kickoff_questions_sent',
+      action_data: { request_id: ticketId, request_title: ticketTitle },
     });
 
     return { success: true };
@@ -132,6 +134,8 @@ export const answerKickoffQuestion = async ({
         entity_type: 'help_request',
         title: 'Client Has Answered Your Questions',
         message: `The client has responded to all your kickoff questions for "${ticketTitle}". You are ready to begin.`,
+        notification_type: 'kickoff_answered',
+        action_data: { request_id: ticketId, request_title: ticketTitle },
       });
     }
 

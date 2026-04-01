@@ -99,6 +99,8 @@ export const updateApplicationStatus = async (
               entity_type: 'help_request',
               title: 'Application Accepted',
               message: `Your application for "${notifRequest.title}" was accepted. You can now get started.`,
+              notification_type: 'application_approved',
+              action_data: { request_id: requestId, request_title: notifRequest.title },
             });
 
             await createNotification({
@@ -107,6 +109,8 @@ export const updateApplicationStatus = async (
               entity_type: 'help_request',
               title: 'Ticket Now In Progress',
               message: `A developer has been accepted for "${notifRequest.title}" and work is beginning.`,
+              notification_type: 'ticket_accepted',
+              action_data: { request_id: requestId, request_title: notifRequest.title },
             });
           }
         } catch (e) {
@@ -300,6 +304,20 @@ export const submitDeveloperApplication = async (
               ticket_title: request.title,
               ticket_id: requestId,
               developer_name: devProfile?.name || 'A developer',
+            },
+          });
+
+          await createNotification({
+            user_id: request.client_id,
+            related_entity_id: requestId,
+            entity_type: 'help_request',
+            title: 'New Developer Application',
+            message: `${devProfile?.name || 'A developer'} has applied to help with "${request.title}".`,
+            notification_type: 'new_application',
+            action_data: {
+              request_id: requestId,
+              developer_name: devProfile?.name || 'A developer',
+              request_title: request.title,
             },
           });
         }

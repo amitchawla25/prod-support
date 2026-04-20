@@ -80,7 +80,7 @@ const ClientTicketsPage: React.FC = () => {
   }, [userId, isAuthenticated]);
 
   const handleNewRequest = () => {
-    navigate('/request-help');
+    navigate('/client/help');
   };
 
   return (

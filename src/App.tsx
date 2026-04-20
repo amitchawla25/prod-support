@@ -30,9 +30,11 @@ import VerificationSuccessPage from './pages/VerificationSuccessPage';
 import VerificationCanceledPage from './pages/VerificationCanceledPage';
 import ApplicationDetailPage from './pages/ApplicationDetailPage';
 import TicketDetailPage from './pages/TicketDetailPage';
-import TicketStatusTest from './pages/TicketStatusTest';
 import ClientTicketsPage from './pages/ClientTicketsPage';
 import ChatPage from './pages/ChatPage';
+import AboutPage from './pages/AboutPage';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
 // Remove the import for ManageApplicationsPage
 // import ManageApplicationsPage from './pages/ManageApplicationsPage';
 
@@ -304,12 +306,14 @@ function App() {
                 <Route path="/onboarding/developer" element={<Navigate to="/developer/onboarding" replace />} />
                 <Route path="/onboarding/client" element={<Navigate to="/client/onboarding" replace />} />
                 
+                {/* Public informational pages */}
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/privacy" element={<PrivacyPage />} />
+                <Route path="/terms" element={<TermsPage />} />
+
                 {/* 404 route */}
                 <Route path="*" element={<NotFound />} />
-                
-                {/* Ticket status test route */}
-                <Route path="/ticket-status-test" element={<TicketStatusTest />} />
-                
+
                 {/* Removed the route for ManageApplicationsPage */}
               </Routes>
             </Suspense>

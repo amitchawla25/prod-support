@@ -124,19 +124,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </p>
             </div>
             <div className="flex gap-6">
-              <a href="#" className="text-sm text-muted-foreground hover:text-foreground">
+              <a href="/about" className="text-sm text-muted-foreground hover:text-foreground">
                 About
               </a>
-              <a href="#" className="text-sm text-muted-foreground hover:text-foreground">
+              <a href="/search" className="text-sm text-muted-foreground hover:text-foreground">
                 Developers
               </a>
-              <a href="#" className="text-sm text-muted-foreground hover:text-foreground">
-                Pricing
+              <a href="/privacy" className="text-sm text-muted-foreground hover:text-foreground">
+                Privacy
               </a>
-              <a href="#" className="text-sm text-muted-foreground hover:text-foreground">
-                FAQ
+              <a href="/terms" className="text-sm text-muted-foreground hover:text-foreground">
+                Terms
               </a>
-              <a href="#" className="text-sm text-muted-foreground hover:text-foreground">
+              <a href="mailto:hello@prod-support.com" className="text-sm text-muted-foreground hover:text-foreground">
                 Contact
               </a>
             </div>

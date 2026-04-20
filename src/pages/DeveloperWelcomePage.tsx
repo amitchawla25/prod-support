@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '../components/ui/button';
 import { Progress } from '../components/ui/progress';
 import { useAuth, getCurrentUserData } from '../contexts/auth';
+import { supabase } from '../integrations/supabase/client';
 import { toast } from 'sonner';
 
 const DeveloperWelcomePage = () => {
@@ -16,6 +17,7 @@ const DeveloperWelcomePage = () => {
   const [developerData, setDeveloperData] = useState<any>(null);
   const [activeApplications, setActiveApplications] = useState(0);
   const [upcomingSessions, setUpcomingSessions] = useState(0);
+  const [completedSessions, setCompletedSessions] = useState(0);
 
   useEffect(() => {
     const fetchDeveloperData = async () => {
@@ -39,10 +41,31 @@ const DeveloperWelcomePage = () => {
           if (userData.availability !== undefined) completed++;
           
           setProfileCompletion(Math.round((completed / totalFields) * 100));
-          
-          // In a real app, we would fetch this from API
-          setActiveApplications(3);
-          setUpcomingSessions(1);
+
+          // Fetch real counts from Supabase
+          const [{ count: appCount }, { count: sessionCount }] = await Promise.all([
+            supabase
+              .from('help_request_matches')
+              .select('id', { count: 'exact', head: true })
+              .eq('developer_id', userId)
+              .in('status', ['pending', 'approved_by_client']),
+            supabase
+              .from('help_sessions')
+              .select('id', { count: 'exact', head: true })
+              .eq('developer_id', userId)
+              .eq('status', 'scheduled'),
+          ]);
+
+          setActiveApplications(appCount ?? 0);
+          setUpcomingSessions(sessionCount ?? 0);
+
+          const { count: doneCount } = await supabase
+            .from('help_sessions')
+            .select('id', { count: 'exact', head: true })
+            .eq('developer_id', userId)
+            .eq('status', 'completed');
+
+          setCompletedSessions(doneCount ?? 0);
         }
       } catch (error) {
         console.error('Error fetching developer data:', error);
@@ -183,16 +206,16 @@ const DeveloperWelcomePage = () => {
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm">Acceptance Rate</span>
-                  <span className="font-medium">95%</span>
+                  <span className="text-sm">Active Applications</span>
+                  <span className="font-medium">{activeApplications}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm">Average Rating</span>
-                  <span className="font-medium">4.8/5</span>
+                  <span className="text-sm">Upcoming Sessions</span>
+                  <span className="font-medium">{upcomingSessions}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Completed Sessions</span>
-                  <span className="font-medium">24</span>
+                  <span className="font-medium">{completedSessions}</span>
                 </div>
               </div>
             </CardContent>
